@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    <h1>plz tap each botton</h1>
+    <% require 'pg' %>
+    <% connection = PG::connect(dbname: 'goya') %>
+    <% connection.internal_encoding = "UTF-8" %>
+
+    <% result_not_self = connection.exec("SELECT give_for, weight, date FROM crops WHERE give_for != '自家消費';") %>
+    <% data_not_self = [] %>
+    <% result_not_self.each do |record| %>
+        <% data_not_self << "customer: #{record['give_for']} goya size: #{record['weight']} date: #{record['date']}" %>
+    <% end %>
+
+    <% result_quality = connection.exec("SELECT quality, weight, date FROM crops WHERE quality = 'false';") %>
+    <% data_quality = [] %>
+    <% result_quality.each do |record| %>
+        <% data_quality << "quality: #{record['quality']} goya size: #{record['weight']} date: #{record['date']}" %>
+    <% end %>
+    
+    <form action='goya_not_self_consumption' method='POST'>
+        <input type='text' name='goya_not_self_consumption' value='<%= data_not_self.join(' ') %>'>
+        <input type='submit' name='Send' value='Not self'>
+    </form>
+    
+    </form>
+        <form action='goya_quality_false' method='POST'>
+        <input type='text' name='goya_quality_false' value='<%= data_quality.join(' ') %>'>
+        <input type='submit' name='Send' value='Quality false'>
+    </form>
+
+  </body>
+</html>
